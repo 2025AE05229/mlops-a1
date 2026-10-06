@@ -1,0 +1,20 @@
+# Core Data & ML
+numpy==1.26.4
+pandas==2.1.4
+scikit-learn==1.8.0
+
+# Visualization & EDA
+matplotlib==3.10.3
+seaborn==0.13.2
+
+# Experiment Tracking & Registry
+mlflow==3.16.1
+
+# Serving & Microservice API
+fastapi==0.123.0
+uvicorn[standard]==0.38.0
+pydantic==2.12.5
+requests==2.34.2
+
+# Testing & Quality
+pytest==8.4.2

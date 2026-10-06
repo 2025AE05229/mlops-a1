@@ -1,0 +1,37 @@
+artifact_path: /Users/ankitkatba/Documents/Higher Education/Sem 3/MLOps/Assignment/mlruns/1/models/m-439258bb7313496996a8658729cab050/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+is_signature_from_type_hint: false
+mlflow_version: 3.16.1
+model_id: m-439258bb7313496996a8658729cab050
+model_size_bytes: 550618
+model_uuid: m-439258bb7313496996a8658729cab050
+prompts: null
+run_id: 57dc17a61ccd4c6da82e63457e3ae7d4
+signature:
+  inputs: '[{"type": "long", "name": "age", "required": true}, {"type": "long", "name":
+    "sex", "required": true}, {"type": "long", "name": "cp", "required": true}, {"type":
+    "double", "name": "trestbps", "required": true}, {"type": "double", "name": "chol",
+    "required": true}, {"type": "long", "name": "fbs", "required": true}, {"type":
+    "long", "name": "restecg", "required": true}, {"type": "double", "name": "thalach",
+    "required": true}, {"type": "long", "name": "exang", "required": true}, {"type":
+    "double", "name": "oldpeak", "required": true}, {"type": "long", "name": "slope",
+    "required": true}, {"type": "long", "name": "ca", "required": true}, {"type":
+    "long", "name": "thal", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-10-06 07:37:06.102319'

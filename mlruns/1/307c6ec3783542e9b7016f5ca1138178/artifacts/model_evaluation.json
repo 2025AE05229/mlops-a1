@@ -1,0 +1,73 @@
+{
+  "logreg": {
+    "best_hyperparameters": {
+      "classifier__C": 1.0,
+      "classifier__solver": "lbfgs"
+    },
+    "cv_metrics": {
+      "accuracy": {
+        "mean": 0.8471,
+        "std": 0.01
+      },
+      "precision": {
+        "mean": 0.8768,
+        "std": 0.0542
+      },
+      "recall": {
+        "mean": 0.7834,
+        "std": 0.0459
+      },
+      "f1": {
+        "mean": 0.8245,
+        "std": 0.0069
+      },
+      "roc_auc": {
+        "mean": 0.9025,
+        "std": 0.0144
+      }
+    },
+    "test_metrics": {
+      "accuracy": 0.8852,
+      "precision": 0.8387,
+      "recall": 0.9286,
+      "f1": 0.8814,
+      "roc_auc": 0.9665
+    }
+  },
+  "rf": {
+    "best_hyperparameters": {
+      "classifier__max_depth": 8,
+      "classifier__min_samples_split": 5,
+      "classifier__n_estimators": 100
+    },
+    "cv_metrics": {
+      "accuracy": {
+        "mean": 0.8223,
+        "std": 0.0106
+      },
+      "precision": {
+        "mean": 0.8282,
+        "std": 0.0498
+      },
+      "recall": {
+        "mean": 0.783,
+        "std": 0.0741
+      },
+      "f1": {
+        "mean": 0.8004,
+        "std": 0.0211
+      },
+      "roc_auc": {
+        "mean": 0.9021,
+        "std": 0.0217
+      }
+    },
+    "test_metrics": {
+      "accuracy": 0.8852,
+      "precision": 0.8387,
+      "recall": 0.9286,
+      "f1": 0.8814,
+      "roc_auc": 0.9502
+    }
+  }
+}

@@ -1,0 +1,24 @@
+artifact_path: /Users/ankitkatba/Documents/Higher Education/Sem 3/MLOps/Assignment/mlruns/1/models/m-f2d09eafdad6498b9fabd7d5dfbf409a/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.skops
+    predict_fn: predict
+    python_version: 3.12.5
+  sklearn:
+    code: null
+    pickled_model: model.skops
+    serialization_format: skops
+    sklearn_version: 1.8.0
+    skops_trusted_types:
+    - sklearn.tree._tree.Tree
+mlflow_version: 3.16.1
+model_id: m-f2d09eafdad6498b9fabd7d5dfbf409a
+model_size_bytes: 114164
+model_uuid: m-f2d09eafdad6498b9fabd7d5dfbf409a
+prompts: null
+run_id: 2ddb570ff4e941caa8dbaec933b4b787
+utc_time_created: '2026-10-06 07:21:47.845964'
