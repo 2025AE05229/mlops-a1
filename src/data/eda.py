@@ -34,7 +34,7 @@ def plot_class_balance(df: pd.DataFrame, output_path: Path):
     counts = df["target"].value_counts().sort_index()
     labels = ["No Disease (0)", "Disease Present (1)"]
     palette = ["#2b5c8f", "#d95f02"]
-    
+
     bars = ax.bar(labels, counts, color=palette, width=0.5, edgecolor="black", alpha=0.85)
     for bar in bars:
         height = bar.get_height()
@@ -42,7 +42,7 @@ def plot_class_balance(df: pd.DataFrame, output_path: Path):
                     xy=(bar.get_x() + bar.get_width() / 2, height),
                     xytext=(0, 4), textcoords="offset points",
                     ha="center", va="bottom", fontsize=10, fontweight="bold")
-        
+
     ax.set_ylabel("Patient Count")
     ax.set_title("Heart Disease Target Class Balance")
     ax.set_ylim(0, max(counts) * 1.15)

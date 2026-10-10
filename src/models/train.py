@@ -11,8 +11,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV, StratifiedKFold, train_test_split
 from sklearn.pipeline import Pipeline
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from src.features.build_features import create_preprocessor
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # noqa: E402
+from src.features.build_features import create_preprocessor  # noqa: E402
 
 DEFAULT_DATA_PATH = Path("data/processed/heart_disease_cleaned.csv")
 DEFAULT_MODELS_DIR = Path("models")

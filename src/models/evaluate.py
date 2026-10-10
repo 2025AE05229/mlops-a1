@@ -21,8 +21,8 @@ from sklearn.metrics import (
 from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_split
 from sklearn.pipeline import Pipeline
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from src.models.train import DEFAULT_DATA_PATH, tune_and_train_model
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # noqa: E402
+from src.models.train import DEFAULT_DATA_PATH, tune_and_train_model  # noqa: E402
 
 DEFAULT_REPORT_PATH = Path("reports/model_evaluation.json")
 DEFAULT_FIGURES_DIR = Path("reports/figures")
@@ -121,7 +121,7 @@ def plot_model_comparison(results: dict, figures_dir: Path):
     # 1. Metric Comparison Bar Chart
     metrics_list = ["accuracy", "precision", "recall", "f1", "roc_auc"]
     metric_labels = ["Accuracy", "Precision", "Recall", "F1-Score", "ROC-AUC"]
-    
+
     logreg_scores = [results["logreg"]["test_metrics"][m] * 100 for m in metrics_list]
     rf_scores = [results["rf"]["test_metrics"][m] * 100 for m in metrics_list]
 
@@ -129,8 +129,10 @@ def plot_model_comparison(results: dict, figures_dir: Path):
     width = 0.35
 
     fig, ax = plt.subplots(figsize=(9, 5))
-    rects1 = ax.bar(x - width/2, logreg_scores, width, label="Logistic Regression", color="#2b5c8f", edgecolor="black", alpha=0.9)
-    rects2 = ax.bar(x + width/2, rf_scores, width, label="Random Forest", color="#d95f02", edgecolor="black", alpha=0.9)
+    rects1 = ax.bar(x - width/2, logreg_scores, width, label="Logistic Regression",
+                    color="#2b5c8f", edgecolor="black", alpha=0.9)
+    rects2 = ax.bar(x + width/2, rf_scores, width, label="Random Forest",
+                    color="#d95f02", edgecolor="black", alpha=0.9)
 
     ax.set_ylabel("Score (%)", fontsize=11, fontweight="bold")
     ax.set_title("Candidate Model Performance Comparison (Holdout Test Set)", fontsize=13, fontweight="bold", pad=12)
@@ -180,7 +182,10 @@ def run_model_comparison(
         }
         test_auc = eval_metrics["test_metrics"]["roc_auc"]
         test_acc = eval_metrics["test_metrics"]["accuracy"]
-        print(f"Model: {model_type} | Best Params: {best_params} | Test ROC-AUC: {test_auc:.4f} | Accuracy: {test_acc:.4f}")
+        print(
+            f"Model: {model_type} | Best Params: {best_params} "
+            f"| Test ROC-AUC: {test_auc:.4f} | Accuracy: {test_acc:.4f}"
+        )
 
         # Resume the run opened in tune_and_train_model to log eval metrics and per-run plots
         y_pred = pipe.predict(X_test)

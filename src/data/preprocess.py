@@ -1,7 +1,6 @@
 """Data preprocessing and cleaning module for UCI Heart Disease dataset."""
 
 from pathlib import Path
-import numpy as np
 import pandas as pd
 
 DEFAULT_RAW_PATH = Path("data/raw/processed.cleveland.data")
