@@ -1,10 +1,10 @@
-FROM python:3.12-slim
+FROM --platform=linux/amd64 python:3.12-slim
 
 WORKDIR /app
 
-# Install dependencies first (cached layer — only rebuilt when requirements.txt changes)
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install runtime-only dependencies (no mlflow, matplotlib, pytest, etc.)
+COPY requirements-serve.txt .
+RUN pip install --no-cache-dir -r requirements-serve.txt
 
 # Copy application source and all model artifacts (both .joblib files + champion.txt)
 COPY src/ ./src/

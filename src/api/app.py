@@ -3,6 +3,7 @@
 Loads the champion sklearn Pipeline at startup and exposes:
   GET  /health   — liveness check
   POST /predict  — returns binary prediction and confidence score
+  GET  /metrics  — Prometheus-format metrics (request counts, latency histograms)
 
 Champion resolution order (first match wins):
   1. MODEL_PATH env var — explicit override, e.g. for testing a specific model
@@ -15,16 +16,28 @@ Environment variables:
   PORT        port uvicorn listens on (default: 8080, overridden by IBM Code Engine)
 """
 
+import json
+import logging
 import os
+import time
 from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 from pathlib import Path
 
 import joblib
 import pandas as pd
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import BaseModel
 
 from src.features.build_features import CATEGORICAL_COLS, NUMERICAL_COLS
+
+# ---------------------------------------------------------------------------
+# Structured JSON logger
+# ---------------------------------------------------------------------------
+
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+logger = logging.getLogger("api")
 
 # Column order must match the order the Pipeline was trained on
 FEATURE_COLS = NUMERICAL_COLS + CATEGORICAL_COLS
@@ -100,6 +113,29 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Instrument all routes; expose /metrics GET endpoint automatically.
+Instrumentator().instrument(app).expose(app)
+
+
+# ---------------------------------------------------------------------------
+# Middleware — structured request logging
+# ---------------------------------------------------------------------------
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """Log every request as a single JSON line to stdout."""
+    start = time.perf_counter()
+    response = await call_next(request)
+    latency_ms = round((time.perf_counter() - start) * 1000, 2)
+    logger.info(json.dumps({
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "method": request.method,
+        "path": request.url.path,
+        "status_code": response.status_code,
+        "latency_ms": latency_ms,
+    }))
+    return response
+
 
 # ---------------------------------------------------------------------------
 # Endpoints
@@ -126,5 +162,11 @@ def predict(features: PatientFeatures):
     model = app.state.model
     prediction = int(model.predict(X)[0])
     confidence = float(model.predict_proba(X)[0, 1])
+
+    logger.info(json.dumps({
+        "event": "prediction",
+        "prediction": prediction,
+        "confidence": round(confidence, 4),
+    }))
 
     return PredictionResponse(prediction=prediction, confidence=confidence)

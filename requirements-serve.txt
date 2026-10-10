@@ -1,0 +1,15 @@
+# Runtime-only dependencies — used by the Docker image / Code Engine deployment.
+# Training, EDA, and test dependencies are in requirements.txt (CI only).
+
+# Core Data & ML
+numpy==1.26.4
+pandas==2.1.4
+scikit-learn==1.8.0
+
+# Serving & Microservice API
+fastapi==0.123.0
+uvicorn[standard]==0.38.0
+pydantic==2.12.5
+
+# Monitoring
+prometheus-fastapi-instrumentator==7.1.0
