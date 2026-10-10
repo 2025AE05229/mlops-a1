@@ -18,3 +18,4 @@ requests==2.34.2
 
 # Testing & Quality
 pytest==8.4.2
+httpx==0.28.1

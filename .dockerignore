@@ -1,0 +1,41 @@
+# Exclude everything that is not needed at runtime inside the container.
+# Only src/ and models/logreg_model.joblib are copied in by the Dockerfile.
+
+# Data & raw files
+data/
+
+# MLflow artifacts
+mlruns/
+mlflow.db
+mlflow.db-shm
+mlflow.db-wal
+
+# Reports and visualisations
+reports/
+
+# Tests — not needed at runtime
+tests/
+
+# VCS and CI
+.git/
+.github/
+
+# Docs and plans
+*.md
+REPRODUCIBILITY.md
+
+# RF model — only champion (logreg) is served
+models/rf_model.joblib
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+
+# OS artefacts
+.DS_Store

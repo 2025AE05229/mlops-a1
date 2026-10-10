@@ -1,0 +1,10 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      # MODEL_PATH is intentionally omitted — the app resolves the champion
+      # automatically from models/champion.txt written by ci_train.py.
+      # Uncomment to override: MODEL_PATH=models/rf_model.joblib

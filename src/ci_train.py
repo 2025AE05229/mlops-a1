@@ -59,11 +59,20 @@ def main(data_path: Path, models_dir: Path) -> None:
         print(f"  Best params     : {best_params}")
         print(f"  MLflow run ID   : {run_id}\n")
 
+    # Select champion by highest CV ROC-AUC and write to models/champion.txt.
+    # The API reads this file at startup to resolve which .joblib to load —
+    # no MLflow server needed at serve time.
+    champion = max(results, key=lambda m: results[m]["best_cv_roc_auc"])
+    champion_file = models_dir / "champion.txt"
+    champion_file.write_text(champion)
+
     print("=" * 50)
     print("CI Training Summary")
     print("=" * 50)
     for model_type, info in results.items():
-        print(f"  {model_type:8s}  CV ROC-AUC={info['best_cv_roc_auc']:.4f}  run_id={info['run_id']}")
+        marker = " ✓ champion" if model_type == champion else ""
+        print(f"  {model_type:8s}  CV ROC-AUC={info['best_cv_roc_auc']:.4f}  run_id={info['run_id']}{marker}")
+    print(f"  Champion written to: {champion_file}")
     print("=" * 50)
 
 
