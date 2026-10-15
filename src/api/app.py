@@ -70,6 +70,7 @@ def _require_auth(credentials: HTTPBasicCredentials = Depends(_security)):
             headers={"WWW-Authenticate": "Basic"},
         )
 
+
 MODELS_DIR = Path(os.getenv("MODELS_DIR", "models"))
 CHAMPION_FILE = MODELS_DIR / "champion.txt"
 _FALLBACK_MODEL_TYPE = "logreg"
@@ -198,6 +199,7 @@ def predict(features: PatientFeatures, _: None = Depends(_require_auth)):
     }))
 
     return PredictionResponse(prediction=prediction, confidence=confidence)
+
 
 @app.get("/metrics")
 def metrics(_: None = Depends(_require_auth)):
