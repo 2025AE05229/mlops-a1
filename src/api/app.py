@@ -19,6 +19,7 @@ Environment variables:
 import json
 import logging
 import os
+import secrets
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -26,7 +27,9 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import BaseModel
 
@@ -41,6 +44,31 @@ logger = logging.getLogger("api")
 
 # Column order must match the order the Pipeline was trained on
 FEATURE_COLS = NUMERICAL_COLS + CATEGORICAL_COLS
+
+# ---------------------------------------------------------------------------
+# Basic Authentication
+# ---------------------------------------------------------------------------
+
+_security = HTTPBasic()
+
+_API_USERNAME = os.getenv("API_USERNAME", "admin")
+_API_PASSWORD = os.getenv("API_PASSWORD", "7fc8da10-7191-4c71-af80-ad59ba526291")
+
+
+def _require_auth(credentials: HTTPBasicCredentials = Depends(_security)):
+    """Verify HTTP Basic credentials against API_USERNAME / API_PASSWORD env vars.
+
+    Uses secrets.compare_digest to prevent timing attacks.
+    Raises HTTP 401 on invalid credentials.
+    """
+    valid_user = secrets.compare_digest(credentials.username.encode(), _API_USERNAME.encode())
+    valid_pass = secrets.compare_digest(credentials.password.encode(), _API_PASSWORD.encode())
+    if not (valid_user and valid_pass):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Basic"},
+        )
 
 MODELS_DIR = Path(os.getenv("MODELS_DIR", "models"))
 CHAMPION_FILE = MODELS_DIR / "champion.txt"
@@ -113,8 +141,8 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Instrument all routes; expose /metrics GET endpoint automatically.
-Instrumentator().instrument(app).expose(app)
+# Instrument all routes; DO NOT auto-expose /metrics — we add it below with auth.
+Instrumentator().instrument(app)
 
 
 # ---------------------------------------------------------------------------
@@ -148,7 +176,7 @@ def health():
 
 
 @app.post("/predict", response_model=PredictionResponse)
-def predict(features: PatientFeatures):
+def predict(features: PatientFeatures, _: None = Depends(_require_auth)):
     """Run inference on a single patient record.
 
     Returns:
@@ -170,3 +198,8 @@ def predict(features: PatientFeatures):
     }))
 
     return PredictionResponse(prediction=prediction, confidence=confidence)
+
+@app.get("/metrics")
+def metrics(_: None = Depends(_require_auth)):
+    """Prometheus metrics — protected by HTTP Basic Authentication."""
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
