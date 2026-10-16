@@ -1,0 +1,16 @@
+# Contour HTTPProxy: routes external traffic (kind node port 80 -> host :9090) to the API Service.
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: heart-disease-api
+  namespace: heart-disease
+spec:
+  virtualhost:
+    # *.localtest.me resolves to 127.0.0.1, so no /etc/hosts entry is needed.
+    fqdn: heart-disease.localtest.me
+  routes:
+    - conditions:
+        - prefix: /
+      services:
+        - name: heart-disease-api
+          port: 80
