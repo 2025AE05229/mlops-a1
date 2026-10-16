@@ -1,0 +1,42 @@
+flowchart TB
+    DEV["Developer - git push to GitHub"]
+
+    subgraph CI["GitHub Actions CI"]
+        direction LR
+        LINT["lint flake8"] --> TEST["test pytest"] --> CTRAIN["train ci_train.py"] --> ART["artifacts: junit.xml, models, mlruns"]
+    end
+
+    subgraph ML["Data and Model Development"]
+        direction LR
+        UCI["UCI Heart Disease data"] --> PRE["download, preprocess, EDA"] --> FE["scaling + one-hot encoding"] --> TRAIN["GridSearchCV 5-fold: LogReg, Random Forest"]
+        TRAIN --> MLF["MLflow tracking and registry"]
+        TRAIN --> PKG["Pipeline joblib + champion.txt"]
+    end
+
+    subgraph SERVE["Packaging"]
+        direction LR
+        IMG["Docker image: FastAPI + uvicorn, port 8080"]
+    end
+
+    subgraph DEPLOY["Deployment targets"]
+        direction LR
+        CE["IBM Code Engine, public HTTPS URL"]
+        K8S["kind: Deployment x2, Service, Contour HTTPProxy + Ingress"]
+    end
+
+    USER["Client - curl / app"]
+    API["API: GET /health, POST /predict, GET /metrics"]
+
+    subgraph MON["Monitoring and Logging"]
+        direction LR
+        LOGS["JSON request logs on stdout"]
+        PROM["Prometheus metrics, Basic auth"] --> GRAF["Grafana Cloud dashboard"]
+    end
+
+    DEV --> CI
+    DEV --> ML
+    ML --> SERVE
+    SERVE --> DEPLOY
+    USER --> DEPLOY
+    DEPLOY --> API
+    API --> MON

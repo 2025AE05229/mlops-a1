@@ -10,10 +10,10 @@ Arguments:
     --figures-dir  Directory for evaluation figures (default: reports/figures)
 
 Usage:
-    python src/ci_train.py
-    python src/ci_train.py --data-path data/processed/heart_disease_cleaned.csv
-    python src/ci_train.py --data-path data/processed/heart_disease_cleaned.csv --models-dir models
-    python src/ci_train.py --report-path reports/model_evaluation.json --figures-dir reports/figures
+    python src/ml_pipeline/ci_train.py
+    python src/ml_pipeline/ci_train.py --data-path data/processed/heart_disease_cleaned.csv
+    python src/ml_pipeline/ci_train.py --data-path data/processed/heart_disease_cleaned.csv --models-dir models
+    python src/ml_pipeline/ci_train.py --report-path reports/model_evaluation.json --figures-dir reports/figures
 """
 
 import argparse
@@ -22,10 +22,10 @@ from pathlib import Path
 
 import mlflow
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # noqa: E402
-from src.data.preprocess import preprocess_pipeline, DEFAULT_CLEAN_PATH  # noqa: E402
-from src.models.evaluate import run_model_comparison  # noqa: E402
-from src.models.register_model import register_champion_model  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # noqa: E402
+from src.ml_pipeline.tasks.preprocess import preprocess_pipeline, DEFAULT_CLEAN_PATH  # noqa: E402
+from src.ml_pipeline.tasks.evaluate import run_model_comparison  # noqa: E402
+from src.ml_pipeline.tasks.register_model import register_champion_model  # noqa: E402
 
 DEFAULT_DATA_PATH = DEFAULT_CLEAN_PATH
 DEFAULT_MODELS_DIR = Path("models")

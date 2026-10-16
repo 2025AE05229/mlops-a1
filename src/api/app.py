@@ -33,7 +33,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import BaseModel
 
-from src.features.build_features import CATEGORICAL_COLS, NUMERICAL_COLS
+from src.ml_pipeline.tasks.build_features import CATEGORICAL_COLS, NUMERICAL_COLS
 
 # ---------------------------------------------------------------------------
 # Structured JSON logger

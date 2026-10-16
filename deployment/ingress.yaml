@@ -1,0 +1,20 @@
+# Standard Kubernetes Ingress, served by Contour (no IngressClass is defined in this cluster).
+# Uses a different host than httpproxy.yaml so the two don't compete for the same virtual host.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: heart-disease-api
+  namespace: heart-disease
+spec:
+  rules:
+    # *.localtest.me resolves to 127.0.0.1, so no /etc/hosts entry is needed.
+    - host: heart-disease-ingress.localtest.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: heart-disease-api
+                port:
+                  name: http

@@ -14,7 +14,7 @@ import mlflow.sklearn
 import pandas as pd
 from mlflow.models import infer_signature
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
 DEFAULT_DATA_PATH = Path("data/processed/heart_disease_cleaned.csv")
 DEFAULT_MODELS_DIR = Path("models")

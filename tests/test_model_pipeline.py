@@ -9,9 +9,9 @@ import mlflow
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
-from src.features.build_features import create_preprocessor
-from src.models.evaluate import evaluate_pipeline
-from src.models.train import build_pipeline, train_and_save_model, tune_and_train_model
+from src.ml_pipeline.tasks.build_features import create_preprocessor
+from src.ml_pipeline.tasks.evaluate import evaluate_pipeline
+from src.ml_pipeline.tasks.train import build_pipeline, train_and_save_model, tune_and_train_model
 
 
 class TestModelPipeline(unittest.TestCase):

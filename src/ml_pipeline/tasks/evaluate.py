@@ -21,8 +21,8 @@ from sklearn.metrics import (
 from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_split
 from sklearn.pipeline import Pipeline
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # noqa: E402
-from src.models.train import DEFAULT_DATA_PATH, tune_and_train_model  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))  # noqa: E402
+from src.ml_pipeline.tasks.train import DEFAULT_DATA_PATH, tune_and_train_model  # noqa: E402
 
 DEFAULT_REPORT_PATH = Path("reports/model_evaluation.json")
 DEFAULT_FIGURES_DIR = Path("reports/figures")

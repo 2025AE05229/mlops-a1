@@ -5,6 +5,10 @@ services:
       - "8080:8080"
     environment:
       - PORT=8080
+      # HTTP Basic credentials for /predict and /metrics. Compose reads these from the
+      # shell or from a git-ignored .env file next to this file (API_PASSWORD is required).
+      - API_USERNAME=${API_USERNAME:-admin}
+      - API_PASSWORD=${API_PASSWORD:?Set API_PASSWORD in your shell or a .env file}
       # MODEL_PATH is intentionally omitted — the app resolves the champion
       # automatically from models/champion.txt written by ci_train.py.
       # Uncomment to override: MODEL_PATH=models/rf_model.joblib

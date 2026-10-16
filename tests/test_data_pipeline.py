@@ -6,9 +6,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from src.data.download_data import acquire_data
-from src.data.preprocess import clean_data, load_raw_data, COLUMN_NAMES
-from src.data.eda import run_eda
+from src.ml_pipeline.tasks.download_data import acquire_data
+from src.ml_pipeline.tasks.preprocess import clean_data, load_raw_data, COLUMN_NAMES
+from src.ml_pipeline.tasks.eda import run_eda
 
 
 class TestDataPipeline(unittest.TestCase):

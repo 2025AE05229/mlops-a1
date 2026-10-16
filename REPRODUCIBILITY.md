@@ -55,7 +55,7 @@ Run the full training + evaluation pipeline from the `Assignment/` directory:
 ```bash
 # Trains both models (GridSearchCV), evaluates, saves joblib artifacts,
 # and logs all MLflow runs (params, metrics, plots, model artifacts)
-python -m src.models.evaluate
+python -m src.ml_pipeline.tasks.evaluate
 ```
 
 This produces:
@@ -71,7 +71,7 @@ This produces:
 After training, register the best model (auto-selected by test ROC-AUC) to the MLflow Model Registry:
 
 ```bash
-python -m src.models.register_model
+python -m src.ml_pipeline.tasks.register_model
 ```
 
 This saves the champion pipeline as `models:/HeartDiseaseClassifier/1` in the local file-backed registry. It can be loaded back anywhere with:
