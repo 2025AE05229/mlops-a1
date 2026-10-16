@@ -1,13 +1,19 @@
-"""CI training script — trains both models and logs to a file-based MLflow store.
+"""CI training script — trains, evaluates, and registers the champion model.
 
-Designed to run in a clean GitHub Actions environment. Sets the MLflow tracking
-URI to file:./mlruns (overriding the sqlite:///mlflow.db default in train.py)
-so no pre-existing database is needed. Exits non-zero on any failure.
+Designed to run in a clean GitHub Actions environment. Exits non-zero on any failure.
+
+Arguments:
+    --data-path    Path to the processed CSV dataset
+    --models-dir   Directory to save trained .joblib model files (default: models)
+    --report-path  Path for the evaluation JSON report
+                   (default: reports/model_evaluation.json)
+    --figures-dir  Directory for evaluation figures (default: reports/figures)
 
 Usage:
     python src/ci_train.py
     python src/ci_train.py --data-path data/processed/heart_disease_cleaned.csv
     python src/ci_train.py --data-path data/processed/heart_disease_cleaned.csv --models-dir models
+    python src/ci_train.py --report-path reports/model_evaluation.json --figures-dir reports/figures
 """
 
 import argparse
@@ -18,19 +24,20 @@ import mlflow
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # noqa: E402
 from src.data.preprocess import preprocess_pipeline, DEFAULT_CLEAN_PATH  # noqa: E402
-from src.models.train import tune_and_train_model  # noqa: E402
+from src.models.evaluate import run_model_comparison  # noqa: E402
+from src.models.register_model import register_champion_model  # noqa: E402
 
 DEFAULT_DATA_PATH = DEFAULT_CLEAN_PATH
 DEFAULT_MODELS_DIR = Path("models")
+DEFAULT_REPORT_PATH = Path("reports/model_evaluation.json")
+DEFAULT_FIGURES_DIR = Path("reports/figures")
 
 
-def main(data_path: Path, models_dir: Path) -> None:
-    # Use the file store so CI never needs a pre-existing mlflow.db.
-    # This call must come before tune_and_train_model(), which internally calls
-    # mlflow.set_tracking_uri("sqlite:///mlflow.db") — setting it here first
-    # takes precedence because mlflow.set_tracking_uri is global state and the
-    # last call before mlflow.set_experiment() wins.
-    mlflow.set_tracking_uri("file:./mlruns")
+def main(data_path: Path, models_dir: Path, report_path: Path, figures_dir: Path) -> None:
+    # Use sqlite store so CI never needs a pre-existing mlflow.db.
+    # set_tracking_uri is global state; this call wins because it runs before
+    # run_model_comparison() and register_champion_model() set their own URIs.
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
 
     # Regenerate processed CSV if absent (e.g. first CI run from clean checkout).
     if not data_path.exists():
@@ -41,38 +48,42 @@ def main(data_path: Path, models_dir: Path) -> None:
     print(f"Training on: {data_path}")
     print(f"Saving models to: {models_dir}\n")
 
-    results = {}
-    for model_type in ["logreg", "rf"]:
-        print(f"--- Training {model_type} ---")
-        _, best_params, cv_metrics, run_id = tune_and_train_model(
-            model_type=model_type,
-            data_path=data_path,
-            models_dir=models_dir,
-            experiment_name="heart-disease-classification",
-        )
-        results[model_type] = {
-            "best_params": best_params,
-            "best_cv_roc_auc": cv_metrics["best_cv_roc_auc"],
-            "run_id": run_id,
-        }
-        print(f"  Best CV ROC-AUC : {cv_metrics['best_cv_roc_auc']:.4f}")
-        print(f"  Best params     : {best_params}")
-        print(f"  MLflow run ID   : {run_id}\n")
+    results = run_model_comparison(
+        data_path=data_path,
+        report_path=report_path,
+        figures_dir=figures_dir,
+    )
+    print(f"Evaluation report written to: {report_path}\n")
+
+    model_uri = register_champion_model(
+        report_path=report_path,
+        models_dir=models_dir,
+        data_path=data_path,
+    )
 
     # Select champion by highest CV ROC-AUC and write to models/champion.txt.
     # The API reads this file at startup to resolve which .joblib to load —
     # no MLflow server needed at serve time.
-    champion = max(results, key=lambda m: results[m]["best_cv_roc_auc"])
+    champion = max(results, key=lambda m: results[m]["cv_metrics"]["roc_auc"]["mean"])
     champion_file = models_dir / "champion.txt"
     champion_file.write_text(champion)
 
     print("=" * 50)
     print("CI Training Summary")
     print("=" * 50)
+    # register_champion_model() registers the model with the highest test ROC-AUC.
+    registered = max(results, key=lambda m: results[m]["test_metrics"]["roc_auc"])
     for model_type, info in results.items():
         marker = " ✓ champion" if model_type == champion else ""
-        print(f"  {model_type:8s}  CV ROC-AUC={info['best_cv_roc_auc']:.4f}  run_id={info['run_id']}{marker}")
+        cv_auc = info["cv_metrics"]["roc_auc"]["mean"]
+        test_auc = info["test_metrics"]["roc_auc"]
+        uri = model_uri if model_type == registered else "not registered"
+        print(
+            f"  {model_type:8s}  CV ROC-AUC={cv_auc:.4f}  "
+            f"Test ROC-AUC={test_auc:.4f}  registry={uri}{marker}"
+        )
     print(f"  Champion written to: {champion_file}")
+    print(f"  Registered model URI: {model_uri}")
     print("=" * 50)
 
 
@@ -90,10 +101,27 @@ if __name__ == "__main__":
         default=DEFAULT_MODELS_DIR,
         help="Directory to save trained .joblib model files",
     )
+    parser.add_argument(
+        "--report-path",
+        type=Path,
+        default=DEFAULT_REPORT_PATH,
+        help="Path to write the model evaluation JSON report",
+    )
+    parser.add_argument(
+        "--figures-dir",
+        type=Path,
+        default=DEFAULT_FIGURES_DIR,
+        help="Directory to save evaluation figures",
+    )
     args = parser.parse_args()
 
     try:
-        main(data_path=args.data_path, models_dir=args.models_dir)
+        main(
+            data_path=args.data_path,
+            models_dir=args.models_dir,
+            report_path=args.report_path,
+            figures_dir=args.figures_dir,
+        )
     except Exception as exc:
         print(f"ERROR: CI training failed — {exc}", file=sys.stderr)
         sys.exit(1)
