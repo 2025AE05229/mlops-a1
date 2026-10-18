@@ -7,8 +7,8 @@ data (UCI Heart Disease, Cleveland subset), served as a containerised, monitored
 - **CI/CD (GitHub Actions):** https://github.com/2025AE05229/mlops-a1/actions/workflows/ci.yml
 - **Live API (IBM Code Engine):** https://heart-disease-api.1s0uu8ax973i.us-south.codeengine.appdomain.cloud
   (`/health` is open; `/predict` and `/metrics` need HTTP Basic auth)
-- **Report:** _add link / filename of the final report here_
-- **Pipeline video:** _add link / filename here_
+- **Report:** `report.docx` (in repository root)
+- **Pipeline video:** [`video-recording.mp4`](video-recording.mp4) · [SharePoint link](https://wilpbitspilaniacin0-my.sharepoint.com/:v:/g/personal/2025ae05229_wilp_bits-pilani_ac_in/IQDA8ujulQJhSYEWCJz6RZyfAfIXkPke9cjAkKm_5V2CMEA?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=Aw98Oe)
 
 ## Architecture
 
