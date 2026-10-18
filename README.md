@@ -3,8 +3,8 @@
 MLOps Assignment 01 (AIMLCZG523). A classifier that predicts heart-disease risk from patient health
 data (UCI Heart Disease, Cleveland subset), served as a containerised, monitored REST API.
 
-- **Repository:** https://github.com/ak-eyebee/mlops-a1
-- **CI/CD (GitHub Actions):** https://github.com/ak-eyebee/mlops-a1/actions/workflows/ci.yml
+- **Repository:** https://github.com/2025AE05229/mlops-a1
+- **CI/CD (GitHub Actions):** https://github.com/2025AE05229/mlops-a1/actions/workflows/ci.yml
 - **Live API (IBM Code Engine):** https://heart-disease-api.1s0uu8ax973i.us-south.codeengine.appdomain.cloud
   (`/health` is open; `/predict` and `/metrics` need HTTP Basic auth)
 - **Report:** _add link / filename of the final report here_
@@ -44,7 +44,6 @@ Champion model: **Logistic Regression** (selected on test ROC-AUC and recall; se
 ├── models/            logreg_model.joblib, rf_model.joblib, champion.txt
 ├── reports/           EDA figures, model_evaluation.json, model_selection.md
 ├── deployment/        Kubernetes manifests (kustomize): Deployment, Service, HTTPProxy, Ingress
-├── scripts/           populate_grafana.py (traffic generator for the dashboard)
 ├── docs/              architecture diagram
 ├── screenshots/       evidence for the report
 ├── .github/workflows/ci.yml
